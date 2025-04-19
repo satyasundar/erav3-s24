@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+openai
+fpdf
+smtplib
+email-validator
+python-dotenv
