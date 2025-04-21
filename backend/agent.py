@@ -1,6 +1,6 @@
 import json
 import datetime
-from utils import extract_links, generate_pdf, send_email_with_pdf
+from utils import extract_links, summarize_links, generate_pdf, send_email_with_pdf
 import google.generativeai as genai
 from dotenv import load_dotenv
 import os
@@ -23,14 +23,16 @@ Respond with EXACTLY ONE of these formats:
 
 Available functions:
 - extract_links: Extracts all links from messages within last N days. Format: {"messages": [...], "time_frame_days": int}
-- generate_pdf: Generates a PDF from list of links. Format: {"links": [...]} 
+- summarize_links: Summarizes the links using LLM. Format: {"links": [...]}
+- generate_pdf: Generates a PDF from list of links with timestamp, summary, and hyperlink. Format: {"links": [...]}
 - send_email_with_pdf: Sends the generated PDF to Gmail. Format: {"to_email": "satyanayak2040@gmail.com", "pdf_path": "telegram_links.pdf"}
 
 Work plan:
 1. Decide the time frame.
 2. Call extract_links.
-3. Call generate_pdf with the result.
-4. Call send_email_with_pdf to complete.
+3. Call summarize_links with the result.
+4. Call generate_pdf with the result.
+5. Call send_email_with_pdf to complete.
 Only use FUNCTION_CALL and FINAL_ANSWER.
 """
 
@@ -52,11 +54,14 @@ Only use FUNCTION_CALL and FINAL_ANSWER.
     pdf_path = ""
     recipient_email = "satyasundar.nayak@gmail.com"
 
-    while iteration_count < 5:
+    while iteration_count < 6:
         response = model.generate_content(conversation)
+        # print(f"\n\n ===== Conversation ===== \n\n:: {conversation}")
         reply = response.text.strip()
         print(f"\n\n =====Iteration {iteration_count + 1}: ===== \n\n {reply}")
 
+        # if iteration_count == 3:
+        #     break
         if reply.startswith("FUNCTION_CALL:"):
             _, payload = reply.split(":", 1)
             func_name, param_str = payload.strip().split("|", 1)
@@ -69,6 +74,19 @@ Only use FUNCTION_CALL and FINAL_ANSWER.
                     {
                         "role": "user",
                         "parts": ["Result:\n" + json.dumps(extracted_links, indent=2)],
+                    }
+                )
+            elif func_name == "summarize_links":
+                summarized_links = summarize_links(extracted_links, llm_model=model)
+                # print(f"\n\nSummarized Links: {summarized_links}")
+                conversation.append({"role": "model", "parts": [reply]})
+                conversation.append(
+                    {
+                        "role": "user",
+                        "parts": [
+                            "Summerized Links:\n"
+                            + json.dumps(summarized_links, indent=2)
+                        ],
                     }
                 )
 

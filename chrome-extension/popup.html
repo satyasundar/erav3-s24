@@ -1,16 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <title>Telegram Link Agent</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <h2>Telegram Link Agent</h2>
-    <textarea
-      id="prompt"
-      placeholder="Ask what to do with Telegram links..."
-    ></textarea>
-    <button id="run-btn">Run Agent</button>
-    <div id="result"></div>
+    <div class="container">
+      <h1>🧠 Telegram Agent</h1>
+      <textarea
+        id="prompt"
+        placeholder="Ask what to do with Telegram links..."
+      ></textarea>
+      <button id="run-btn">▶ Run Agent</button>
+      <div id="spinner" class="spinner hidden"></div>
+      <div id="result"></div>
+    </div>
     <script src="popup.js"></script>
   </body>
 </html>
