@@ -105,7 +105,7 @@ def send_email_with_pdf(to_email, pdf_path):
 
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
         smtp.login(
-            "satyanayak2041@gmail.com", "your-app-password"
+            "user@gmail.com", "your-app-password"
         )  # TODO: get the password from env or use gmail api
         smtp.send_message(msg)
     return "Email sent."
